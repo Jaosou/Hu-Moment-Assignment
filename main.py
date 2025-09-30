@@ -5,8 +5,10 @@ import numpy as np
 # โหลดภาพ (สมมติเป็นรูป 10x10 pixel)
 # img = cv2.imread("image/pic1.jpg")
 # img = cv2.imread("image/assign.jpg")
-# img = cv2.imread("image/nature.jpg")    
-img = cv2.imread("image/object.jpg")
+img = cv2.imread("image/object.jpg")    
+# img = cv2.imread("image/eye1.png") #50-70
+# img = cv2.imread("image/eye2.png") #50-60
+
 
 threshold_start = int(input("Enter threshold start (0-255): "))
 threshold_end = int(input("Enter threshold end (0-255): "))
@@ -16,6 +18,8 @@ gray = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY),(200,200))
 # bw = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)[1]
 bw = np.empty_like(gray)
 equalized = cv2.equalizeHist(gray)
+sharpen_kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+gussian_blur = np.array([[1,2,1], [2,4,2], [1,2,1]]) / 16
 
 global y_bar
 global x_bar
@@ -53,6 +57,61 @@ def nomalize_central(p,q):
     global mass
     narmalize = cal_moments_raw(p,q) / (mass ** (1 + (p+q)/2))
     return narmalize
+
+def gradient():
+    print("Gradient")
+    
+    grad_x = []
+    grad_y = []
+
+    for i in range(rows):
+        for j in range(cols):
+            if j > 0 and j < cols - 1:
+                sobel_x = int(gray[i][j + 1]) - int(gray[i][j - 1])
+            else:
+                sobel_x = 0
+
+            if i > 0 and i < rows - 1:
+                sobel_y = int(gray[i + 1][j]) - int(gray[i - 1][j])
+            else:
+                sobel_y = 0
+
+            grad_x.append(sobel_x)
+            grad_y.append(sobel_y)
+
+    gradient_magnitude = np.sqrt(np.array(grad_x)**2 + np.array(grad_y)**2)
+    max_val = np.max(gradient_magnitude)
+    normalized_gradient = (gradient_magnitude / max_val * 200)
+    return normalized_gradient.reshape(gray.shape)
+    # plt.imshow(gradient_magnitude.reshape(gray.shape), cmap="gray")
+    # plt.title("Gradient Magnitude")
+    # plt.axis("off")
+    # plt.show()
+    
+
+def sharpen():
+    conv = np.zeros_like(gray)
+    for i in range(1, rows-1):
+        for j in range(1, cols-1):
+            region = gray[i-1:i+2, j-1:j+2]
+            sharpened_value = np.sum(region * sharpen_kernel)
+            sharpened_value = np.clip(sharpened_value, 0, 255)
+            conv[i][j] = sharpened_value
+            
+    print(conv)
+    return conv
+            
+def guassian():
+    conv = np.zeros_like(gray)
+    for i in range(1, rows-1):
+        for j in range(1, cols-1):
+            region = gray[i-1:i+2, j-1:j+2]
+            blurred_value = np.sum(region * gussian_blur)
+            blurred_value = np.clip(blurred_value, 0, 255)
+            conv[i][j] = blurred_value
+            
+    print(conv)
+    return conv
 
 print("Gray shape:", gray.shape)
 # ขนาดของภาพ
@@ -95,7 +154,10 @@ for i in range(len(graphs)):
     pdf = graphs[i] / pixel_sum
     cdf += pdf
     equa_grahp.append(cdf) 
-
+    
+image_gradient = gradient()
+conv_image = sharpen()
+gussian_image = guassian()
 
 print("ผลรวมค่าพิกเซลทั้งหมด =", pixel_sum)
 print("ค่าเฉลี่ย =", pixel_sum / int((rows *cols)))
@@ -129,7 +191,7 @@ plt.title(f"Grayscale Image ({rows}x{cols})")
 plt.axis("off")
 
 plt.subplot(1,5,2)
-plt.imshow(bw, cmap="gray")
+plt.imshow(conv_image, cmap="gray")
 plt.scatter(x_bar, y_bar, c="red", s=40, marker="x")
 plt.title(f"Binary Image ({rows}x{cols})")
 plt.axis("off")
@@ -146,9 +208,15 @@ plt.title("Cumulative Pixel Sum (Total)")
 plt.xlabel("Pixel Intensity (0-255)")
 plt.ylabel("Cumulative Frequency")
 
+# plt.subplot(1,5,5)
+# plt.plot(equa_grahp, color="blue")
+# plt.title("CDF for Histogram Equalization")
+# plt.xlabel("Pixel Intensity (0-255)")
+# plt.ylabel("Cumulative Frequency")
+
+
 plt.subplot(1,5,5)
-plt.plot(equa_grahp, color="blue")
-plt.title("CDF for Histogram Equalization")
-plt.xlabel("Pixel Intensity (0-255)")
-plt.ylabel("Cumulative Frequency")
+plt.imshow(gussian_image, cmap="gray")
+plt.title(f"Grayscale Image ({rows}x{cols})")
+plt.axis("off")
 plt.show()
