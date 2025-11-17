@@ -5,16 +5,16 @@ import numpy as np
 # โหลดภาพ (สมมติเป็นรูป 10x10 pixel)
 # img = cv2.imread("image/pic1.jpg")
 # img = cv2.imread("image/assign.jpg")
-img = cv2.imread("image/object.jpg")    
+# img = cv2.imread("image/object.jpg")    
 # img = cv2.imread("image/eye1.png") #50-70
-# img = cv2.imread("image/eye2.png") #50-60
+img = cv2.imread("image/eye3.png") #50-60
 
 
 threshold_start = int(input("Enter threshold start (0-255): "))
 threshold_end = int(input("Enter threshold end (0-255): "))
 
 # แปลงเป็น grayscale
-gray = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY),(200,200))
+gray = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY),(128,128))
 # bw = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)[1]
 bw = np.empty_like(gray)
 equalized = cv2.equalizeHist(gray)
@@ -191,7 +191,7 @@ plt.title(f"Grayscale Image ({rows}x{cols})")
 plt.axis("off")
 
 plt.subplot(1,5,2)
-plt.imshow(conv_image, cmap="gray")
+plt.imshow(image_gradient, cmap="gray")
 plt.scatter(x_bar, y_bar, c="red", s=40, marker="x")
 plt.title(f"Binary Image ({rows}x{cols})")
 plt.axis("off")
