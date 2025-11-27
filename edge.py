@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # โหลดภาพแบบขาวดำ
-img = cv2.imread('image/road.webp', cv2.IMREAD_GRAYSCALE)
+
+img = cv2.imread('image/road1.jpg')
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 img_size = 256
 img = cv2.resize(img, (img_size, img_size))
 
-guassian_blur = cv2.GaussianBlur(img, (5,5), sigmaX=1.5)
+guassian_blur = cv2.GaussianBlur(img, (5,5), sigmaX=0.75)
 
 # Canny edge detection
 edges = cv2.Canny(guassian_blur, 100, 200)
@@ -84,7 +86,7 @@ print(peaks)
 for rho, theta in peaks:
     x1, y1, x2, y2 = convert_rho_theta_to_line(rho, theta)
     print(rho, np.rad2deg(theta), "->", (x1, y1, x2, y2))
-    cv2.line(guassian_blur, (x1, y1), (x2, y2), (255, 255, 0), 1)
+    cv2.line(img, (x1, y1), (x2, y2), (255, 0, 100), 1)
 
 # peak_idx = np.unravel_index(accumulator.argmax(), accumulator.shape) 
 # rho_peak = rhos[peak_idx[0]] 
@@ -111,7 +113,7 @@ for rho, theta in peaks:
 plt.figure(figsize=(10,5))
 plt.subplot(1,2,1)
 plt.title("Original")
-plt.imshow(guassian_blur)
+plt.imshow(img)
 
 plt.subplot(1,2,2)
 plt.title("Canny Edges")
