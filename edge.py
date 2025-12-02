@@ -9,7 +9,7 @@ img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 img_size = 256
 img = cv2.resize(img, (img_size, img_size))
 
-guassian_blur = cv2.GaussianBlur(img, (5,5), sigmaX=0.75)
+guassian_blur = cv2.GaussianBlur(img, (5,5), sigmaX=0.20)
 
 # Canny edge detection
 edges = cv2.Canny(guassian_blur, 100, 200)

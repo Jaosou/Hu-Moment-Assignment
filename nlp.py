@@ -8,7 +8,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 # ---------------- Dataset path ----------------
-dataset_path = "/root/.cache/kagglehub/datasets/khalidboussaroual/2d-geometric-shapes-17-shapes/versions/4/2D_Geometric_Shapes_Dataset"
+dataset_path = "/home/aticha/.cache/kagglehub/datasets/khalidboussaroual/2d-geometric-shapes-17-shapes/versions/4/2D_Geometric_Shapes_Dataset"
 classes = [d for d in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, d))]
 label_to_class = {i: cls for i, cls in enumerate(classes)}
 print("Classes found:", label_to_class)
